@@ -36,28 +36,30 @@ The primary goal is "No Tech Support" deployment for ~100 friends.
 - The user runs `docker compose up -d`.
 - Docker pulls all dependencies (Node, Python) isolated inside containers.
 - The PostgreSQL container uses a **Docker Named Volume** (`pgdata`) to persist the database without triggering Mac/Windows OS-level file permission conflicts.
-- On startup, the Next.js container automatically runs Prisma migrations (`npx prisma db push && npm run start`), building the exact schema required before the UI becomes available. Zero clicks required.
+- On startup, the Next.js container automatically runs Prisma migrations (`npx prisma migrate deploy && npm start`), applying the schema safely before the UI becomes available. Zero clicks required.
+- **Database Init:** Initialization is kept extremely simple (KISS) relying on standard Docker Compose setup.
 
 ### B. Setup Friction & The Settings UI
 
 - Non-technical users shouldn't edit `.env` files.
 - The Next.js dashboard will have a dedicated **Settings** screen.
 - Users input their OpenAI API Keys, Job Search terms, and Scraper intervals here.
-- This data is stored in a `settings` table in the PostgreSQL database.
+- This data is safely stored in a `settings` table in the PostgreSQL database (API keys will be encrypted at rest).
 - The Python scraper reads directly from this table on startup.
 
 ### C. The Scraper (Producer)
 
-- The Python application runs an infinite loop/scheduler inside a detached container.
+- The Python application runs an infinite loop/scheduler inside a detached container. (To minimize scope and avoid needing a listener API, there is no "Run Now" button. The UI simply displays a countdown to the next scheduled run. Advanced users can trigger a run via terminal command if necessary).
 - It pulls active search terms from the database.
 - Uses the `jobspy` library to scrape LinkedIn, Indeed, etc.
 - Deduplicates using the job URL before pushing to the database.
 - **Error Handling:** If an IP block occurs or JobSpy hits a CAPTCHA, it reports the failure directly to a `system_logs` table in the DB. The UI surfaces this automatically.
+- **Maintainability:** Scraper updates to adapt to job board changes will be shipped as container updates; users will simply pull the latest image.
 
 ### D. The Brain (AI Tailoring)
 
 - The Next.js server handles AI prompts.
-- Prompt Engineering ensures the LLM relies entirely on the user's provided "Body of Work" (Master Resume) to prevent AI hallucinations.
+- Prompt Engineering ensures the LLM relies entirely on the user's provided "Body of Work" (Master Resume) to prevent AI hallucinations. (Note: Master Resume ingestion is already handled by the JobSync fork).
 - The system is provider-agnostic, easily supporting OpenAI, Anthropic, or even Local Ollama (though Ollama requires more host configuration).
 
 ---
@@ -70,4 +72,4 @@ The primary goal is "No Tech Support" deployment for ~100 friends.
 4. **Milestone 4:** Dashboard Integration — JobSync UI modified to display scraped leads and expose the Scraper Health (Logs UI).
 5. **Milestone 5:** Integrate AI resume tailoring, PDF generation, and final UI polish.
 
-[A.Ruiz Resume2026.pdf](:/b184cd8321b64a4b8f642877a3983e23)
+6.

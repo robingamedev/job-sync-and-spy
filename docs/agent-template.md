@@ -28,9 +28,3 @@ Format it like this:
 ## Key Takeaways
 
 ```
-
-## Review my Task
-
-I have a document for today.
-
-Please review it.

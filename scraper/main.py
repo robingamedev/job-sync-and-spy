@@ -25,26 +25,41 @@ if "?schema=" in DATABASE_URL:
 # SQLAlchemy engine
 engine = create_engine(DATABASE_URL)
 
-def log_to_db(level, source, message, details=None):
+def create_automation_run(conn, automation_id):
+    run_id = str(uuid.uuid4())
+    conn.execute(
+        text("""
+            INSERT INTO "AutomationRun" (id, "automationId", status, "startedAt")
+            VALUES (:id, :autoId, 'running', :startedAt)
+        """),
+        {
+            "id": run_id,
+            "autoId": automation_id,
+            "startedAt": datetime.utcnow()
+        }
+    )
+    return run_id
+
+def finish_automation_run(conn, run_id, status, searched=0, saved=0, error_message=None):
     try:
-        with engine.begin() as conn:
-            conn.execute(
-                text("""
-                    INSERT INTO "SystemLog" (id, level, source, message, details, "createdAt")
-                    VALUES (:id, :level, :source, :message, :details, :createdAt)
-                """),
-                {
-                    "id": str(uuid.uuid4()),
-                    "level": level,
-                    "source": source,
-                    "message": message,
-                    "details": json.dumps(details) if details else None,
-                    "createdAt": datetime.utcnow()
-                }
-            )
-            logger.info(f"DB LOG ({level}): {message}")
+        conn.execute(
+            text("""
+                UPDATE "AutomationRun" 
+                SET status = :status, "jobsSearched" = :searched, "jobsSaved" = :saved, 
+                    "errorMessage" = :error, "completedAt" = :completedAt
+                WHERE id = :id
+            """),
+            {
+                "status": status,
+                "searched": searched,
+                "saved": saved,
+                "error": error_message,
+                "completedAt": datetime.utcnow(),
+                "id": run_id
+            }
+        )
     except Exception as e:
-        logger.error(f"Failed to write to SystemLog: {e}")
+        logger.error(f"Failed to update AutomationRun: {e}")
 
 def get_or_create(conn, table, user_id, label, value):
     # Fetch existing
@@ -76,7 +91,7 @@ def get_or_create_status(conn):
     )
     return new_id
 
-def process_job(conn, user_id, status_id, job):
+def process_job(conn, user_id, status_id, automation_id, job):
     job_url = job.get("job_url", "")
     if not job_url:
         return False # Need a URL for deduplication
@@ -109,10 +124,12 @@ def process_job(conn, user_id, status_id, job):
         text("""
             INSERT INTO "Job" (
                 id, "userId", "jobUrl", description, "jobType", "createdAt", applied, "statusId",
-                "jobTitleId", "companyId", "jobSourceId", "salaryRange", "locationId", "discoveryStatus", "discoveredAt"
+                "jobTitleId", "companyId", "jobSourceId", "salaryRange", "locationId", "discoveryStatus", "discoveredAt",
+                "automationId"
             ) VALUES (
                 :id, :userId, :jobUrl, :desc, :jobType, :createdAt, false, :statusId,
-                :titleId, :companyId, :sourceId, :salary, :locationId, 'new', :createdAt
+                :titleId, :companyId, :sourceId, :salary, :locationId, 'new', :createdAt,
+                :automationId
             )
         """),
         {
@@ -127,7 +144,8 @@ def process_job(conn, user_id, status_id, job):
             "companyId": company_id,
             "sourceId": source_id,
             "salary": job.get("salary_source", None),
-            "locationId": location_id
+            "locationId": location_id,
+            "automationId": automation_id
         }
     )
     return True
@@ -135,62 +153,70 @@ def process_job(conn, user_id, status_id, job):
 def run_scraper():
     logger.info("Starting scrape cycle...")
     try:
-        with engine.connect() as conn:
-            # Get all active user settings
-            settings_rows = conn.execute(text('SELECT "userId", "searchTerms", "searchLocations" FROM "PocketSpySettings" WHERE "isActive" = true')).fetchall()
+        with engine.begin() as conn:
+            # Get all active automations
+            automations = conn.execute(text('SELECT id, "userId", keywords, location, "jobBoard" FROM "Automation" WHERE status = \'active\'')).fetchall()
             
-            if not settings_rows:
-                logger.info("No active users configured for scraping.")
+            if not automations:
+                logger.info("No active automations found.")
                 return
 
             status_id = get_or_create_status(conn)
 
-            for user_id, terms_json, locations_json in settings_rows:
+            for auto_id, user_id, keywords, location, job_board in automations:
+                run_id = None
                 try:
-                    search_terms = json.loads(terms_json) if terms_json else []
-                    search_locations = json.loads(locations_json) if locations_json else []
-
-                    if not search_terms:
+                    logger.info(f"Running automation {auto_id} - Keywords: {keywords}, Location: {location}")
+                    run_id = create_automation_run(conn, auto_id)
+                    
+                    if not keywords:
+                        logger.warning(f"Automation {auto_id} has no keywords, skipping.")
+                        finish_automation_run(conn, run_id, status='error', error_message="No keywords defined")
                         continue
 
                     # Fallback to general location if None
-                    if not search_locations:
-                        search_locations = ["Remote"]
+                    loc = location if location else "Remote"
+                    
+                    # Convert single string keywords to list if necessary, depending on how JobSync saves them.
+                    # Usually JobSync saves keywords as comma separated strings in the DB.
+                    terms = [k.strip() for k in keywords.split(",")] if "," in keywords else [keywords]
+                    
+                    total_found = 0
+                    total_added = 0
 
-                    for term in search_terms:
-                        for location in search_locations:
-                            logger.info(f"Targeting: {term} in {location} for user {user_id}")
-                            
-                            jobs = scrape_jobs(
-                                site_name=["linkedin", "indeed", "glassdoor"],
-                                search_term=term,
-                                location=location,
-                                results_wanted=20,
-                                hours_old=24, 
-                                country_alice="usa"
-                            )
+                    for term in terms:
+                        logger.info(f"Targeting: '{term}' in '{loc}' for user {user_id}")
+                        
+                        jobs = scrape_jobs(
+                            site_name=["linkedin", "indeed", "glassdoor"],
+                            search_term=term,
+                            location=loc,
+                            results_wanted=20,
+                            hours_old=24, 
+                            country_alice="usa"
+                        )
 
-                            if jobs is None or jobs.empty:
-                                continue
+                        if jobs is None or jobs.empty:
+                            continue
 
-                            added_count = 0
-                            # Convert DataFrame to dicts
-                            for _, job_row in jobs.iterrows():
-                                job_dict = job_row.to_dict()
-                                # ensure db transaction commits
-                                with engine.begin() as transaction_conn:
-                                    if process_job(transaction_conn, user_id, status_id, job_dict):
-                                        added_count += 1
-                                        
-                            log_to_db("info", "scraper", f"Scraped {added_count} new jobs for '{term}'", {"term": term, "found": len(jobs), "added": added_count})
+                        total_found += len(jobs)
+                        
+                        # Convert DataFrame to dicts
+                        for _, job_row in jobs.iterrows():
+                            job_dict = job_row.to_dict()
+                            if process_job(conn, user_id, status_id, auto_id, job_dict):
+                                total_added += 1
+                                    
+                    logger.info(f"Automation {auto_id} complete. Found {total_found}, Added {total_added}.")
+                    finish_automation_run(conn, run_id, status='completed', searched=total_found, saved=total_added)
 
                 except Exception as e:
-                    logger.error(f"Error scraping for user {user_id}: {e}")
-                    log_to_db("error", "scraper", f"Scraping failed for user {user_id}", {"error": str(e)})
+                    logger.error(f"Error scraping automation {auto_id}: {e}")
+                    if run_id:
+                        finish_automation_run(conn, run_id, status='error', error_message=str(e)[:255])
 
     except Exception as e:
         logger.error(f"Critical Scraper Error: {e}")
-        log_to_db("error", "scraper", "Critical scraper loop failure", {"error": str(e)})
 
 if __name__ == "__main__":
     logger.info("Scraper container started. Running initial scrape...")

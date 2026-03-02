@@ -1,0 +1,5 @@
+python-jobspy
+psycopg2-binary
+sqlalchemy
+schedule
+python-dotenv

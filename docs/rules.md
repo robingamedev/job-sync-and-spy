@@ -9,6 +9,7 @@ These are the core architectural, coding, and agent-interaction rules for the **
 - **The Database is the ONLY Bridge:** The Next.js frontend and Python scraper should _never_ communicate directly via APIs or webhooks. All communication happens asynchronously via the PostgreSQL database. Next.js writes settings/commands to DB tables; Python reads them. Python writes scraped jobs to DB tables; Next.js reads them.
 - **Hardcoded Local Security:** As a 100% local, self-hosted tool not exposed to the internet, hardcode database credentials in `docker-compose.yml` (e.g., `POSTGRES_USER=pocketspy`, `POSTGRES_PASSWORD=localpassword`). Do not force users to manage database secrets. (Note: API Keys like OpenAI are the exception, and they must be stored encrypted in the DB via the Settings UI).
 - **Idempotent Scraping:** The Python scraper must expect to be killed at any moment (e.g., stopping the Docker container). It should rely on unique constraints (like Job URLs) and handle inserts with `ON CONFLICT DO NOTHING` to prevent duplicate entries.
+- **Strict Docker-First Execution:** All builds, package installations, database migrations, and scripts MUST be executed inside their respective Docker containers (e.g., using `docker compose exec`, `docker compose up --build`, or `docker run`). Never run commands like `npm install`, `node`, `python`, or `pip` directly on the host OS to prevent environmental contamination and ensure true zero-config portability.
 
 ## 2. Code Rules
 

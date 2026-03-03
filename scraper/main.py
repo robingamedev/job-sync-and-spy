@@ -5,6 +5,7 @@ import uuid
 import json
 import logging
 import schedule
+import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine, text
 from jobspy import scrape_jobs
@@ -105,17 +106,26 @@ def process_job(conn, user_id, status_id, automation_id, job):
     if exists:
         return False
 
+    # Safe string extractor
+    def safe_str(val, default):
+        if val is None:
+            return default
+        if isinstance(val, float) and pd.isna(val):
+            return default
+        val_str = str(val).strip()
+        return val_str if val_str else default
+
     # Get relations
-    company_name = job.get("company", "Unknown Company")
+    company_name = safe_str(job.get("company"), "Unknown Company")
     company_id = get_or_create(conn, "Company", user_id, company_name, company_name.lower())
 
-    title_name = job.get("title", "Unknown Title")
+    title_name = safe_str(job.get("title"), "Unknown Title")
     title_id = get_or_create(conn, "JobTitle", user_id, title_name, title_name.lower())
 
-    location_name = job.get("location", "Remote")
+    location_name = safe_str(job.get("location"), "Remote")
     location_id = get_or_create(conn, "Location", user_id, location_name, location_name.lower())
 
-    job_source_name = job.get("site", "jobspy")
+    job_source_name = safe_str(job.get("site"), "jobspy")
     source_id = get_or_create(conn, "JobSource", user_id, job_source_name, job_source_name.lower())
 
     # Insert Job
@@ -203,7 +213,8 @@ def run_scraper():
                         
                         # Convert DataFrame to dicts
                         for _, job_row in jobs.iterrows():
-                            job_dict = job_row.to_dict()
+                            # job_row.to_dict() gives NaNs for empty cells, we must convert to None to avoid float errors
+                            job_dict = {k: (None if pd.isna(v) else v) for k, v in job_row.to_dict().items()}
                             if process_job(conn, user_id, status_id, auto_id, job_dict):
                                 total_added += 1
                                     

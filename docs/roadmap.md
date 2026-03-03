@@ -48,4 +48,4 @@
 - [ ] Replace PocketSpy with the actual project name 'Job Sync and Spy'.
 - [ ] In Settings, you can add API Keys. What about the other AI platforms?
 - [ ] add terminal commands to run scraping as a test. (docker exec job-sync-and-spy-scraper-1 python main.py)
--
+- [ ] There is hardcoded data in the scraper. Let's move it to the scraper env file.

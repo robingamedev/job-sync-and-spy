@@ -22,9 +22,11 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "3000:3000"
+      - "3737:3000"
     environment:
       - DATABASE_URL=postgresql://pocketspy:localpassword@db:5432/pocketspy?schema=public
+      - AUTH_TRUST_HOST=true
+      - NEXTAUTH_URL=http://localhost:3737
     depends_on:
       db:
         condition: service_healthy

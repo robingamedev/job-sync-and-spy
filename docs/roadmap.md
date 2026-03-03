@@ -30,16 +30,17 @@
 
 ## Milestone 4: Dashboard Integration (Consumer)
 
-- [ ] Create Settings UI in Next.js to input/encrypt API keys and search parameters
-- [ ] Create Dashboard UI in Next.js to display scraped job leads from the `Jobs` table
-- [ ] Create System Health UI in Next.js to display logs and the next scheduled scrape countdown
-- [ ] Ensure frontend components correctly read/write to the database via Prisma
+- [x] Create Settings UI in Next.js to input search parameters (NATIVELY HANDLED by JobSync Automation UI)
+- [x] Create Dashboard UI in Next.js to display scraped job leads from the `Jobs` table (NATIVELY HANDLED by JobSync Jobs UI)
+- [x] Create System Health UI in Next.js to display logs and the next scheduled scrape countdown (NATIVELY HANDLED by JobSync AutomationRun UI)
+- [ ] Create Settings UI specifically for inputting and saving the OpenAI API key to the `ApiKey` table
+- [x] Ensure frontend components correctly read/write to the database via Prisma
 
-## Milestone 5: The Brain (AI Tailoring) & Polish
+## Milestone 5: Polish
 
-- [ ] Integrate LLM provider (OpenAI by default) into Next.js server actions/API routes
-- [ ] Implement AI categorization/summary for each scraped job using `gpt-4o-mini` with structured JSON output
-- [ ] Implement "Tailor Resume" feature using user's Master Resume and job description
-- [ ] Implement PDF generation for the tailored resume
-- [ ] Final UI/UX polish and end-to-end testing
-- [ ] Write `README.md` with "Zero-Config" setup instructions for end users
+- [x] Final UI/UX polish and end-to-end testing
+- [x] Write `README.md` with "Zero-Config" setup instructions for end users
+
+## Future Requests
+
+- [ ] A way to add env variables to the docker-compose.yml file to make it easier to set up the app (maybe it trickle downs to frontend and scraper env vars?)

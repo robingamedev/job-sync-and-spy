@@ -1,6 +1,6 @@
-# PocketSpy Stack Rules
+# Job Sync and Spy Rules
 
-These are the core architectural, coding, and agent-interaction rules for the **PocketSpy Stack**. All contributors (including AI agents) must adhere to these principles to maintain the project's simplicity, resiliency, and "Zero-Config" deployment goals.
+These are the core architectural, coding, and agent-interaction rules for **Job Sync and Spy**. All contributors (including AI agents) must adhere to these principles to maintain the project's simplicity, resiliency, and "Zero-Config" deployment goals.
 
 ## 1. Architecture Rules
 

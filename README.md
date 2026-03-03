@@ -90,3 +90,13 @@ docker compose down
 ```
 
 _Note: This preserves your data in the Docker volumes. The next time you run `up -d`, all your saved jobs will still be there._
+
+## Testing the Scraper
+
+If you want to manually trigger the scraper instead of waiting for its scheduled cycle, you can run the following command from the root of the project:
+
+```bash
+make test-scrape
+```
+
+This will execute the Python script immediately inside the running scraper container and you can watch the output.

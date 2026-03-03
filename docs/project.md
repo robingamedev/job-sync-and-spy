@@ -1,11 +1,11 @@
-# Project Architecture: The PocketSpy Stack
+# Project Architecture: Job Sync and Spy
 
 **Subtitle:** A Self-Hosted, AI-Augmented Job Search CRM
 **Status:** Architecture Phase
 
 ## 1. Executive Summary
 
-The **PocketSpy Stack** is an open-source tool designed to automate the "discovery" and "preparation" phases of the job hunt. Unlike "Auto-Apply" bots that risk account bans, this project focuses on **High-Quality Lead Generation** and **Automated Tailoring**, leaving the final human-in-the-loop submission to the user.
+**Job Sync and Spy** is an open-source tool designed to automate the "discovery" and "preparation" phases of the job hunt. Unlike "Auto-Apply" bots that risk account bans, this project focuses on **High-Quality Lead Generation** and **Automated Tailoring**, leaving the final human-in-the-loop submission to the user.
 
 It leverages **JobSpy** for resilient scraping, and a **Next.js** frontend (forked from [JobSync](https://github.com/Gsync/jobsync)) for a modern dashboard experience, all orchestrated cleanly inside a single Docker Compose deployment.
 

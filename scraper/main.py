@@ -19,6 +19,11 @@ if not DATABASE_URL:
     logger.error("No DATABASE_URL provided.")
     sys.exit(1)
 
+# Get scraper params from env vars with fallbacks
+SCRAPER_RESULTS_WANTED = int(os.getenv("SCRAPER_RESULTS_WANTED", 20))
+SCRAPER_HOURS_OLD = int(os.getenv("SCRAPER_HOURS_OLD", 24))
+SCRAPER_COUNTRY = os.getenv("SCRAPER_COUNTRY", "usa")
+
 # Remove Prisma specific parameters that break SQLAlchemy
 if "?schema=" in DATABASE_URL:
     DATABASE_URL = DATABASE_URL.split("?schema=")[0]
@@ -201,9 +206,9 @@ def run_scraper():
                             site_name=["linkedin", "indeed", "glassdoor"],
                             search_term=term,
                             location=loc,
-                            results_wanted=20,
-                            hours_old=24, 
-                            country_alice="usa"
+                            results_wanted=SCRAPER_RESULTS_WANTED,
+                            hours_old=SCRAPER_HOURS_OLD, 
+                            country_alice=SCRAPER_COUNTRY
                         )
 
                         if jobs is None or jobs.empty:

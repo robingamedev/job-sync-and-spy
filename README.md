@@ -43,6 +43,38 @@ Once you have created an account and logged into the dashboard:
 
 The Python Scraper container reads these active automations directly from your database and will automatically begin pulling in matching job posts. You will see the results appear in your **My Jobs** list!
 
+## Advanced Configuration (Environment Variables)
+
+Both the Next.js frontend and Python scraper can be configured through environment variables. You can set them up by editing the `docker-compose.yml` file, or via `.env` files.
+
+### Scraper Configuration (`docker-compose.yml`)
+
+The scraper comes with a set of default parameters. You can tweak how aggressively it searches by modifying the `environment` section under the `scraper` service:
+
+- `SCRAPER_RESULTS_WANTED`: Number of jobs to scrape per search term (Default: `20`)
+- `SCRAPER_HOURS_OLD`: Maximum age of jobs to include, in hours (Default: `24`)
+- `SCRAPER_COUNTRY`: The country localization to target (Default: `usa`)
+
+_Example:_
+
+```yaml
+scraper:
+  environment:
+    - SCRAPER_RESULTS_WANTED=50
+    - SCRAPER_HOURS_OLD=72
+    - SCRAPER_COUNTRY=canada
+```
+
+### Frontend Configuration
+
+The UI has several optional configurations for integrations. You can uncomment or add these variables under the `frontend` service in `docker-compose.yml`:
+
+- `ENCRYPTION_KEY`: A secure string (used to encrypt stored API keys in the dashboard). Recommended to generate one with `openssl rand -base64 32`.
+- `OPENAI_API_KEY`: Your OpenAI key, used for AI job skill and semantic extraction in the JobSync app.
+- `DEEPSEEK_API_KEY`: Used as an alternative LLM to OpenAI.
+- `OLLAMA_BASE_URL`: For connecting to local open-source LLMs hosted via Ollama.
+- `TZ`: Your local timezone (Default: `America/Los_Angeles`).
+
 ## System Architecture
 
 - **PostgreSQL**: The central persistence layer (defined via Prisma schema).

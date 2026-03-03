@@ -27,6 +27,12 @@ services:
       - DATABASE_URL=postgresql://pocketspy:localpassword@db:5432/pocketspy?schema=public
       - AUTH_TRUST_HOST=true
       - NEXTAUTH_URL=http://localhost:3737
+      - TZ=${TZ:-America/Los_Angeles}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -38,6 +44,9 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgresql://pocketspy:localpassword@db:5432/pocketspy?schema=public
+      - SCRAPER_RESULTS_WANTED=${SCRAPER_RESULTS_WANTED:-20}
+      - SCRAPER_HOURS_OLD=${SCRAPER_HOURS_OLD:-24}
+      - SCRAPER_COUNTRY=${SCRAPER_COUNTRY:-usa}
     depends_on:
       db:
         condition: service_healthy

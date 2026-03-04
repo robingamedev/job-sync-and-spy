@@ -44,8 +44,7 @@
 ## Future Requests
 
 - [x] A way to add env variables to the docker-compose.yml file to make it easier to set up the app (maybe it trickle downs to frontend and scraper env vars?)
-- [ ] Currently, in the JobSync app, you can add a Job Discovery Automation. You can only select JSearch. It would be nice to incorporate our scraper as an option in that dropdown.
 - [x] Replace PocketSpy with the actual project name 'Job Sync and Spy'.
-- [ ] In Settings, you can add API Keys. What about the other AI platforms?
+- [ ] In Settings, you can add API Keys for OpenAI, DeepSeek, and Ollama. What about other AI platforms like Claude (Anthropic), Gemini (Google), and Mistral?
 - [x] add terminal commands to run scraping as a test. (docker exec job-sync-and-spy-scraper-1 python main.py)
 - [x] There is hardcoded data in the scraper. Let's move it to the scraper env file.

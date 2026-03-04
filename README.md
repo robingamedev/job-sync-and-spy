@@ -43,6 +43,15 @@ Once you have created an account and logged into the dashboard:
 
 The Python Scraper container reads these active automations directly from your database and will automatically begin pulling in matching job posts. You will see the results appear in your **My Jobs** list!
 
+### How JobSpy and JobSync Automations Work Together
+
+This project uses a "zero-conflict wrapper" approach to give you the best of both worlds without breaking upstream JobSync updates:
+
+1. **JobSpy (Automated BACKGROUND Scraper):** Our custom Python scraper (`scraper/main.py`) runs fully autonomously in the background via a Docker container schedule. As long as you have an Automation with an `active` status in the dashboard, the Python scraper will periodically read those keywords and locations, pulling hundreds of jobs directly into your database.
+2. **JobSync JSearch (Manual FOREGROUND Scraper):** The native JobSync application also has its own TypeScript scraper (using the JSearch API). This native scraper _only_ runs when you explicitly click the **"Run Now"** button in the dashboard.
+
+You do not need to choose between them! JobSpy will continuously find jobs for you in the background for free, and you can still trigger JobSync's native JSearch scraper manually whenever you want a real-time pull.
+
 ## Advanced Configuration (Environment Variables)
 
 Both the Next.js frontend and Python scraper can be configured through environment variables. You can set them up by editing the `docker-compose.yml` file, or via `.env` files.

@@ -52,6 +52,12 @@ This project uses a "zero-conflict wrapper" approach to give you the best of bot
 
 You do not need to choose between them! JobSpy will continuously find jobs for you in the background for free, and you can still trigger JobSync's native JSearch scraper manually whenever you want a real-time pull.
 
+### Running Locally (Sleep Mode)
+
+If you are running this app locally on your laptop, the Python background scraper will **pause** whenever your computer goes to sleep or is closed.
+
+This is perfectly fine! The moment you wake your computer up, Docker will resume the container and the Python scheduler will immediately execute a "catch up" scrape cycle for any scheduled runs it missed while you were asleep. If you want the scraper to run strictly 24/7 without interruption, you can easily host this exact `docker-compose.yml` stack on a cheap cloud VPS (like DigitalOcean, AWS, or Hetzner).
+
 ## Advanced Configuration (Environment Variables)
 
 Both the Next.js frontend and Python scraper can be configured through environment variables. You can set them up by editing the `docker-compose.yml` file, or via `.env` files.

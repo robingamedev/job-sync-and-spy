@@ -19,7 +19,7 @@ You only need [Docker](https://www.docker.com/) installed and running.
 1. **Clone the repository:**
 
    ```bash
-   git clone <your-repo-url> job-sync-and-spy
+   git clone --recurse-submodules <your-repo-url> job-sync-and-spy
    cd job-sync-and-spy
    ```
 

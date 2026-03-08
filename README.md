@@ -1,5 +1,7 @@
 # Job Sync and Spy
 
+**✨ [Not a developer? Click here for the easy 3-click setup guide!](readme-easy.md)**
+
 Job Sync and Spy is a completely free, open-source, self-hosted job search automation system. It combines the powerful [JobSync](https://github.com/Gsync/jobsync) frontend dashboard with a custom Python scraper (`jobspy`) to automatically find, deduplicate, and track job postings across LinkedIn, Indeed, and Glassdoor.
 
 Say goodbye to the chaos of scattered information, endless scrolling, and bloated tracking sheets. With a single command, you will have a full Postgres database, a scheduled scraper, and a beautiful web dashboard running on your local machine.
@@ -12,7 +14,7 @@ Say goodbye to the chaos of scattered information, endless scrolling, and bloate
 4. **Self-Hosted & Private**: Everything runs locally via Docker. You maintain 100% control over your data.
 5. **Zero-Config Deployment**: A single `docker-compose` command spins up the database, the Node.js frontend, and the Python scraper instantly.
 
-## 🚀 Zero-Config Quick Start
+## 🚀 Quick Start (Developers)
 
 You only need [Docker](https://www.docker.com/) installed and running.
 

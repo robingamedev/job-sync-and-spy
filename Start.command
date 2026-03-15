@@ -3,8 +3,26 @@ cd "$(dirname "$0")"
 
 echo "================================================="
 echo " Starting Job Sync and Spy..."
-echo " (PROVIDED AS IS - USE AT YOUR OWN RISK)"
+echo " Copyright (C) 2026"
 echo "================================================="
+echo ""
+echo "This program comes with ABSOLUTELY NO WARRANTY."
+echo "This is free software, and you are welcome to redistribute it"
+echo "under certain conditions."
+echo ""
+echo "By proceeding, you acknowledge that you have read the GNU"
+echo "General Public License v3 and agree that the author is not"
+echo "liable for any damages arising from the use of this software."
+echo ""
+read -p "Do you accept these terms and wish to proceed? (y/n): " confirm
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo ""
+    echo "Operation cancelled by user."
+    exit 0
+fi
+echo ""
+echo "Proceeding..."
+echo ""
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then

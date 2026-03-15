@@ -14,7 +14,7 @@ We use Docker to run everything safely on your computer without installing compl
 
 1. Scroll to the top of this GitHub page.
 2. Click the green **Code** button.
-3. Click **Download ZIP**.
+3. Click **Download ZIP**. (Or [click here](https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip))
 4. Right-click the downloaded file and **Extract** (or unzip) it somewhere easy to find, like your Desktop.
 
 ## Step 3: Start the App!
@@ -22,11 +22,22 @@ We use Docker to run everything safely on your computer without installing compl
 Open the extracted folder. Depending on your computer, double-click the start file:
 
 - **If you are on Windows:** Double click `Start.bat`
-- **If you are on Mac:** Double click `Start.command` (if Mac gives you a warning about an unverified developer, right-click the file and click "Open" from that menu instead).
+- **If you are on Mac:**
+  1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**. Click **Open** again on the popup. This unlocks all the scripts so they work normally from now on.
+  2. After that, just double-click `Start.command` to launch the app.
 
-A black window will appear and start downloading everything it needs. When it is done, it will automatically open your web browser to the app!
+> **Why does Mac block it?** macOS blocks files downloaded from the internet by default. The one-time setup step above tells your Mac it's safe to run these scripts.
+
+A terminal window will appear and start downloading everything it needs. When it is done, it will automatically open your web browser to the app!
 
 ---
+
+### Updating to the Latest Version
+
+When new features are released:
+
+1. Double-click `Update.bat` (Windows) or `Update.command` (Mac).
+2. It will download the latest code and restart the app for you.
 
 ### Having Issues?
 
@@ -34,3 +45,14 @@ If the app stops working, or you get an error:
 
 1. Double-click the `Reload` file (`Reload.bat` on Windows or `Reload.command` on Mac).
 2. It will completely reset and reboot the system for you.
+
+---
+
+### ⚖️ Disclaimer / Use at Your Own Risk
+
+**Job Sync and Spy** is an automation tool provided "as is" under the GNU GPL v3 license. 
+
+- **Not Professional Advice:** This tool is for personal use. We are not responsible for any job search outcomes or account issues (such as being flagged by LinkedIn/Indeed).
+- **No Liability:** By using this software, you agree that the authors are not liable for any data loss, system errors, or damages resulting from the use of this program.
+- **Human in the Loop:** We recommend always reviewing AI-generated content before submitting job applications.
+

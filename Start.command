@@ -3,6 +3,7 @@ cd "$(dirname "$0")"
 
 echo "================================================="
 echo " Starting Job Sync and Spy..."
+echo " (PROVIDED AS IS - USE AT YOUR OWN RISK)"
 echo "================================================="
 
 # Check if Docker is running

@@ -4,6 +4,7 @@ cd /d "%~dp0"
 
 echo =================================================
 echo  Starting Job Sync and Spy...
+echo  (PROVIDED AS IS - USE AT YOUR OWN RISK)
 echo =================================================
 
 docker info >nul 2>nul

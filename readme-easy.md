@@ -23,8 +23,11 @@ Open the extracted folder. Depending on your computer, double-click the start fi
 
 - **If you are on Windows:** Double click `Start.bat`
 - **If you are on Mac:**
-  1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**. Click **Open** again on the popup. This unlocks all the scripts so they work normally from now on.
-  2. After that, just double-click `Start.command` to launch the app.
+  1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**. 
+  2. If you get a warning that Apple cannot verify it and there is no "Open" button, click **OK**.
+  3. Open your Mac's **System Settings** > **Privacy & Security**. Scroll down until you see a message that `Setup_Mac.command` was blocked, and click **Open Anyway**.
+  4. Type your Mac password, and click **Open** on the final popup. This unlocks all the scripts so they work normally from now on.
+  5. After that, just double-click `Start.command` to launch the app.
 
 > **Why does Mac block it?** macOS blocks files downloaded from the internet by default. The one-time setup step above tells your Mac it's safe to run these scripts.
 

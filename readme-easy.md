@@ -14,7 +14,7 @@ We use Docker to run everything safely on your computer without installing compl
 
 1. Scroll to the top of this GitHub page.
 2. Click the green **Code** button.
-3. Click **Download ZIP**. (Or [click here](https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip))
+3. Click **Download ZIP**. (Or [click here](https://github.com/robingamedev/job-sync-and-spy/archive/refs/heads/main.zip))
 4. Right-click the downloaded file and **Extract** (or unzip) it somewhere easy to find, like your Desktop.
 
 ## Step 3: Start the App!
@@ -23,7 +23,7 @@ Open the extracted folder. Depending on your computer, double-click the start fi
 
 - **If you are on Windows:** Double click `Start.bat`
 - **If you are on Mac:**
-  1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**. 
+  1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**.
   2. If you get a warning that Apple cannot verify it and there is no "Open" button, click **OK**.
   3. Open your Mac's **System Settings** > **Privacy & Security**. Scroll down until you see a message that `Setup_Mac.command` was blocked, and click **Open Anyway**.
   4. Type your Mac password, and click **Open** on the final popup. This unlocks all the scripts so they work normally from now on.
@@ -53,9 +53,10 @@ If the app stops working, or you get an error:
 
 ### ⚖️ Disclaimer / Use at Your Own Risk
 
-**Job Sync and Spy** is an automation tool provided "as is" under the GNU GPL v3 license. 
+**Job Sync and Spy** is an automation tool provided "as is" under the GNU GPL v3 license.
 
 - **Not Professional Advice:** This tool is for personal use. We are not responsible for any job search outcomes or account issues (such as being flagged by LinkedIn/Indeed).
 - **No Liability:** By using this software, you agree that the authors are not liable for any data loss, system errors, or damages resulting from the use of this program.
 - **Human in the Loop:** We recommend always reviewing AI-generated content before submitting job applications.
 
+If you have issues, leave a message in the [issues](https://github.com/robingamedev/job-sync-and-spy/issues) tab.

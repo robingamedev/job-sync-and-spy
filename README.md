@@ -25,6 +25,12 @@ You only need [Docker](https://www.docker.com/) installed and running.
    cd job-sync-and-spy
    ```
 
+> [!TIP]
+> **Forgot the `--recurse-submodules` flag?** Run `make init` to pull the missing frontend code.
+>
+> Want Git to always do this automatically? Run:
+> `git config --global submodule.recurse true`
+
 2. **Run the stack:**
 
    ```bash
@@ -107,6 +113,14 @@ docker compose down
 ```
 
 _Note: This preserves your data in the Docker volumes. The next time you run `up -d`, all your saved jobs will still be there._
+
+## Troubleshooting
+
+### Empty `frontend` Directory
+
+If you cloned the repository without the `--recurse-submodules` flag, your `frontend` folder will be empty and `docker compose` will fail.
+
+**Fix:** Run `make init` (or `git submodule update --init --recursive`) from the project root.
 
 ## Testing the Scraper
 

@@ -23,7 +23,7 @@ if /i "%confirm%" neq "y" (
     exit /b 0
 )
 echo.
-echo Proceeding...
+echo Proceeding... checking for docker
 echo.
 
 docker info >nul 2>nul
@@ -51,7 +51,7 @@ if not exist "frontend\Dockerfile" (
     echo Frontend code downloaded successfully!
 )
 
-echo Starting Docker containers in the background...
+echo Starting Docker containers in the background... (might take a moment)
 docker compose up -d --build
 
 echo Waiting for the application to start...

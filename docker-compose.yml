@@ -1,20 +1,4 @@
 services:
-  db:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: pocketspy
-      POSTGRES_PASSWORD: localpassword
-      POSTGRES_DB: pocketspy
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pocketspy -d pocketspy"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   frontend:
     build:
@@ -24,7 +8,7 @@ services:
     ports:
       - "3737:3000"
     environment:
-      - DATABASE_URL=postgresql://pocketspy:localpassword@db:5432/pocketspy?schema=public
+      - DATABASE_URL=file:/data/dev.db
       - AUTH_TRUST_HOST=true
       - NEXTAUTH_URL=http://localhost:3737
       - TZ=${TZ:-America/Los_Angeles}
@@ -33,9 +17,8 @@ services:
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       - RAPIDAPI_KEY=${RAPIDAPI_KEY}
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      - jobspy_data:/data
 
   scraper:
     build:
@@ -43,13 +26,12 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      - DATABASE_URL=postgresql://pocketspy:localpassword@db:5432/pocketspy?schema=public
+      - DATABASE_URL=sqlite:////data/dev.db
       - SCRAPER_RESULTS_WANTED=${SCRAPER_RESULTS_WANTED:-20}
       - SCRAPER_HOURS_OLD=${SCRAPER_HOURS_OLD:-24}
       - SCRAPER_COUNTRY=${SCRAPER_COUNTRY:-usa}
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      - jobspy_data:/data
 
 volumes:
-  pgdata:
+  jobspy_data:

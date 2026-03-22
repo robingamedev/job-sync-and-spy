@@ -92,19 +92,48 @@ goto MENU
 :UPDATE
 cls
 echo =================================================
-echo  Updating the application! We are fetching the newest code and applying changes.
+echo  Checking for updates...
 echo =================================================
 
+set /p LOCAL_VERSION=<VERSION.txt
+powershell -Command "$Response = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/robingamedev/job-sync-and-spy/main/VERSION.txt' -UseBasicParsing; [System.IO.File]::WriteAllText('REMOTE_VERSION.txt', $Response.Content.Trim())" 2>nul
+if exist REMOTE_VERSION.txt (
+    set /p REMOTE_VERSION=<REMOTE_VERSION.txt
+    del REMOTE_VERSION.txt
+) else (
+    set REMOTE_VERSION=unknown
+)
+
+if "!LOCAL_VERSION!" == "!REMOTE_VERSION!" (
+    echo You are already on the latest version [v!LOCAL_VERSION!^].
+    pause
+    goto MENU
+)
+
+echo A new version is available: v!REMOTE_VERSION! (Current: v!LOCAL_VERSION!)
 echo Shutting down existing containers...
 docker compose down
 
 echo.
-echo Removing old frontend code...
-rmdir /s /q frontend
+echo Downloading update...
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/robingamedev/job-sync-and-spy/archive/refs/heads/main.zip' -OutFile 'update.zip'"
+powershell -Command "Expand-Archive -Path 'update.zip' -DestinationPath 'temp_update' -Force"
 
-echo.
-echo Starting up again to download fresh code and rebuild...
-goto START
+echo Creating swap script to safely overwrite local files...
+echo @echo off > swap.bat
+echo timeout /t 2 /nobreak ^>nul >> swap.bat
+echo xcopy /s /y /e temp_update\job-sync-and-spy-main\* . >> swap.bat
+echo rmdir /s /q temp_update >> swap.bat
+echo del update.zip >> swap.bat
+echo start Launcher.bat >> swap.bat
+echo (goto) 2^>nul ^& del "%%~f0" >> swap.bat
+
+echo Handing off to swap script...
+start swap.bat
+exit /b 0
+
+pause
+goto MENU
 
 :RELOAD
 cls

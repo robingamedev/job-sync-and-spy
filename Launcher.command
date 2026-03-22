@@ -80,29 +80,40 @@ while true; do
         2)
             clear
             echo "================================================="
-            echo " Updating the application! We are fetching the newest code and applying changes."
+            echo " Checking for updates..."
             echo "================================================="
             echo ""
+            LOCAL_VERSION=$(cat VERSION.txt 2>/dev/null || echo "0.0.0")
+            REMOTE_VERSION=$(curl -sL "https://raw.githubusercontent.com/robingamedev/job-sync-and-spy/main/VERSION.txt" || echo "unknown")
+            
+            if [ "$LOCAL_VERSION" == "$REMOTE_VERSION" ] && [ "$REMOTE_VERSION" != "unknown" ]; then
+                echo "You are already on the latest version [v$LOCAL_VERSION]."
+                echo ""
+                read -p "Press a key to continue..."
+                continue
+            fi
+            
+            echo "A new version is available: v$REMOTE_VERSION (Current: v$LOCAL_VERSION)"
             echo "Shutting down existing containers..."
             docker compose down
             
             echo ""
-            echo "Removing old frontend code..."
-            rm -rf frontend
+            echo "Downloading update..."
+            curl -L "https://github.com/robingamedev/job-sync-and-spy/archive/refs/heads/main.zip" -o "update.zip"
+            unzip -q -o "update.zip" -d "temp_update"
             
-            echo ""
-            echo "Starting up again to download fresh code and rebuild..."
-            # In bash, we can run the start block logic by extracting it to a function or duplicating its execute.
-            # Since we are using interactive case blocks, we'll just run it linearly:
-            if [ ! -f "frontend/Dockerfile" ]; then
-                curl -L "https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip" -o "frontend_source.zip"
-                unzip -q -o "frontend_source.zip"
-                rm -rf frontend
-                mv jobsync-main frontend
-                rm "frontend_source.zip"
-            fi
-            docker compose up -d --build
-            open "http://localhost:3737" || xdg-open "http://localhost:3737" || echo "Please go to http://localhost:3737"
+            echo "#!/bin/bash" > swap.command
+            echo "cd \"$(dirname "\$0")\"" >> swap.command
+            echo "sleep 2" >> swap.command
+            echo "cp -R temp_update/job-sync-and-spy-main/* ./" >> swap.command
+            echo "rm -rf temp_update update.zip" >> swap.command
+            echo "open Launcher.command" >> swap.command
+            echo "rm -- \"\$0\"" >> swap.command
+            chmod +x swap.command
+            
+            echo "Handing off to swap script..."
+            open swap.command
+            exit 0
             echo ""
             read -p "Press a key to continue..."
             ;;

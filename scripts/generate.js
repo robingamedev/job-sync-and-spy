@@ -93,40 +93,77 @@ echo "================================================="
     {
         id: "UPDATE",
         title: "Update Application Code",
-        description: "Updating the application! We are fetching the newest code and applying changes.",
+        description: "Checking for updates...",
         bat: `
+set /p LOCAL_VERSION=<VERSION.txt
+powershell -Command "$Response = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/robingamedev/job-sync-and-spy/main/VERSION.txt' -UseBasicParsing; [System.IO.File]::WriteAllText('REMOTE_VERSION.txt', $Response.Content.Trim())" 2>nul
+if exist REMOTE_VERSION.txt (
+    set /p REMOTE_VERSION=<REMOTE_VERSION.txt
+    del REMOTE_VERSION.txt
+) else (
+    set REMOTE_VERSION=unknown
+)
+
+if "!LOCAL_VERSION!" == "!REMOTE_VERSION!" (
+    echo You are already on the latest version [v!LOCAL_VERSION!^].
+    pause
+    goto MENU
+)
+
+echo A new version is available: v!REMOTE_VERSION! (Current: v!LOCAL_VERSION!)
 echo Shutting down existing containers...
 docker compose down
 
 echo.
-echo Removing old frontend code...
-rmdir /s /q frontend
+echo Downloading update...
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/robingamedev/job-sync-and-spy/archive/refs/heads/main.zip' -OutFile 'update.zip'"
+powershell -Command "Expand-Archive -Path 'update.zip' -DestinationPath 'temp_update' -Force"
 
-echo.
-echo Starting up again to download fresh code and rebuild...
-goto START
+echo Creating swap script to safely overwrite local files...
+echo @echo off > swap.bat
+echo timeout /t 2 /nobreak ^>nul >> swap.bat
+echo xcopy /s /y /e temp_update\\job-sync-and-spy-main\\* . >> swap.bat
+echo rmdir /s /q temp_update >> swap.bat
+echo del update.zip >> swap.bat
+echo start Launcher.bat >> swap.bat
+echo (goto) 2^>nul ^& del "%%~f0" >> swap.bat
+
+echo Handing off to swap script...
+start swap.bat
+exit /b 0
 `.trim(),
         bash: `
+LOCAL_VERSION=$(cat VERSION.txt 2>/dev/null || echo "0.0.0")
+REMOTE_VERSION=$(curl -sL "https://raw.githubusercontent.com/robingamedev/job-sync-and-spy/main/VERSION.txt" || echo "unknown")
+
+if [ "$LOCAL_VERSION" == "$REMOTE_VERSION" ] && [ "$REMOTE_VERSION" != "unknown" ]; then
+    echo "You are already on the latest version [v$LOCAL_VERSION]."
+    echo ""
+    read -p "${STRINGS.PAUSE_MSG}"
+    continue
+fi
+
+echo "A new version is available: v$REMOTE_VERSION (Current: v$LOCAL_VERSION)"
 echo "Shutting down existing containers..."
 docker compose down
 
 echo ""
-echo "Removing old frontend code..."
-rm -rf frontend
+echo "Downloading update..."
+curl -L "https://github.com/robingamedev/job-sync-and-spy/archive/refs/heads/main.zip" -o "update.zip"
+unzip -q -o "update.zip" -d "temp_update"
 
-echo ""
-echo "Starting up again to download fresh code and rebuild..."
-# In bash, we can run the start block logic by extracting it to a function or duplicating its execute.
-# Since we are using interactive case blocks, we'll just run it linearly:
-if [ ! -f "frontend/Dockerfile" ]; then
-    curl -L "https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip" -o "frontend_source.zip"
-    unzip -q -o "frontend_source.zip"
-    rm -rf frontend
-    mv jobsync-main frontend
-    rm "frontend_source.zip"
-fi
-docker compose up -d --build
-open "http://localhost:3737" || xdg-open "http://localhost:3737" || echo "Please go to http://localhost:3737"
+echo "#!/bin/bash" > swap.command
+echo "cd \\"$(dirname "\\$0")\\"" >> swap.command
+echo "sleep 2" >> swap.command
+echo "cp -R temp_update/job-sync-and-spy-main/* ./" >> swap.command
+echo "rm -rf temp_update update.zip" >> swap.command
+echo "open Launcher.command" >> swap.command
+echo "rm -- \\"\\$0\\"" >> swap.command
+chmod +x swap.command
+
+echo "Handing off to swap script..."
+open swap.command
+exit 0
 `.trim()
     },
     {

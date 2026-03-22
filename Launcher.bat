@@ -3,10 +3,10 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo =================================================
-echo  Starting Job Sync and Spy...
+echo  Job Sync and Spy Launcher
 echo  Copyright (C) 2026
 echo =================================================
-echo.
+
 echo This program comes with ABSOLUTELY NO WARRANTY.
 echo This is free software, and you are welcome to redistribute it
 echo under certain conditions.
@@ -22,9 +22,6 @@ if /i "%confirm%" neq "y" (
     pause
     exit /b 0
 )
-echo.
-echo Proceeding... checking for docker
-echo.
 
 docker info >nul 2>nul
 if %errorlevel% neq 0 (
@@ -38,6 +35,26 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:MENU
+cls
+echo =================================================
+echo  Main Menu
+echo =================================================
+echo 1. Start/Restart Application
+echo 2. Update Application Code
+echo 3. Emergency Reload Containers
+echo 4. Exit
+echo =================================================
+set /p choice="Enter your choice (1-4): "
+
+if "%choice%"=="1" goto START
+if "%choice%"=="2" goto UPDATE
+if "%choice%"=="3" goto RELOAD
+if "%choice%"=="4" exit /b 0
+goto MENU
+
+:START
+cls
 if not exist "frontend\Dockerfile" (
     echo Detected empty frontend directory. Downloading frontend code...
     powershell -Command "Invoke-WebRequest -Uri 'https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip' -OutFile 'frontend_source.zip'"
@@ -64,4 +81,31 @@ echo =================================================
 echo  Job Sync and Spy is running in the background.
 echo  You can safely close this window.
 echo =================================================
+
 pause
+goto MENU
+
+:UPDATE
+cls
+echo Shutting down existing containers...
+docker compose down
+
+echo.
+echo Removing old frontend code...
+rmdir /s /q frontend
+
+echo.
+echo Starting up again to download fresh code and rebuild...
+goto START
+
+:RELOAD
+cls
+echo Shutting down existing containers...
+docker compose down
+echo.
+echo Starting containers...
+docker compose up -d --build
+
+pause
+goto MENU
+

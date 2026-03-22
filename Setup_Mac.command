@@ -9,6 +9,6 @@ echo "================================================="
 xattr -d com.apple.quarantine *.command 2>/dev/null
 
 echo ""
-echo "Done! You can now double-click Start.command normally."
+echo "Done! You can double-click Launcher.command normally."
 echo "================================================="
 read -p "Press Enter to close..."

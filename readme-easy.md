@@ -21,13 +21,13 @@ We use Docker to run everything safely on your computer without installing compl
 
 Open the extracted folder. Depending on your computer, double-click the start file:
 
-- **If you are on Windows:** Double click `Start.bat`
+- **If you are on Windows:** Double click `Launcher.bat`
 - **If you are on Mac:**
   1. **First time only:** Right-click `Setup_Mac.command` and choose **Open**.
   2. If you get a warning that Apple cannot verify it and there is no "Open" button, click **OK**.
   3. Open your Mac's **System Settings** > **Privacy & Security**. Scroll down until you see a message that `Setup_Mac.command` was blocked, and click **Open Anyway**.
   4. Type your Mac password, and click **Open** on the final popup. This unlocks all the scripts so they work normally from now on.
-  5. After that, just double-click `Start.command` to launch the app.
+  5. After that, just double-click `Launcher.command` to launch the app.
 
 > **Why does Mac block it?** macOS blocks files downloaded from the internet by default. The one-time setup step above tells your Mac it's safe to run these scripts.
 
@@ -35,19 +35,13 @@ A terminal window will appear and start downloading everything it needs. When it
 
 ---
 
-### Updating to the Latest Version
+### Updating or Fixing Issues
 
-When new features are released:
+You can handle updates and emergency resets directly inside the Launcher menu.
 
-1. Double-click `Update.bat` (Windows) or `Update.command` (Mac).
-2. It will download the latest code and restart the app for you.
-
-### Having Issues?
-
-If the app stops working, or you get an error:
-
-1. Double-click the `Reload` file (`Reload.bat` on Windows or `Reload.command` on Mac).
-2. It will completely reset and reboot the system for you.
+1. Double-click your `Launcher` file (Windows: `Launcher.bat`, Mac: `Launcher.command`).
+2. Type `2` and press Enter to pull the latest updates.
+3. If the app stops working, type `3` and press Enter to completely reset and reboot the containers.
 
 ---
 

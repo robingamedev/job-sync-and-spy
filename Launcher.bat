@@ -55,6 +55,10 @@ goto MENU
 
 :START
 cls
+echo =================================================
+echo  Starting the application! This may take a minute to prepare everything... Please wait.
+echo =================================================
+
 if not exist "frontend\Dockerfile" (
     echo Detected empty frontend directory. Downloading frontend code...
     powershell -Command "Invoke-WebRequest -Uri 'https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip' -OutFile 'frontend_source.zip'"
@@ -87,6 +91,10 @@ goto MENU
 
 :UPDATE
 cls
+echo =================================================
+echo  Updating the application! We are fetching the newest code and applying changes.
+echo =================================================
+
 echo Shutting down existing containers...
 docker compose down
 
@@ -100,6 +108,10 @@ goto START
 
 :RELOAD
 cls
+echo =================================================
+echo  Executing Emergency Reload! Shutting everything down to perform a fresh restart.
+echo =================================================
+
 echo Shutting down existing containers...
 docker compose down
 echo.

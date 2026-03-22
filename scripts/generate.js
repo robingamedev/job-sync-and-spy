@@ -36,6 +36,7 @@ const MENU_OPTIONS = [
     {
         id: "START",
         title: "Start/Restart Application",
+        description: "Starting the application! This may take a minute to prepare everything... Please wait.",
         bat: `
 if not exist "frontend\\Dockerfile" (
     echo Detected empty frontend directory. Downloading frontend code...
@@ -92,6 +93,7 @@ echo "================================================="
     {
         id: "UPDATE",
         title: "Update Application Code",
+        description: "Updating the application! We are fetching the newest code and applying changes.",
         bat: `
 echo Shutting down existing containers...
 docker compose down
@@ -130,6 +132,7 @@ open "http://localhost:3737" || xdg-open "http://localhost:3737" || echo "Please
     {
         id: "RELOAD",
         title: "Emergency Reload Containers",
+        description: "Executing Emergency Reload! Shutting everything down to perform a fresh restart.",
         bat: `
 echo Shutting down existing containers...
 docker compose down
@@ -196,6 +199,11 @@ function buildBatLauncher() {
     // Exec blocks
     MENU_OPTIONS.forEach((opt) => {
         script += `:${opt.id}\ncls\n`;
+        if (opt.description) {
+            script += `echo =================================================\n`;
+            script += `echo  ${opt.description}\n`;
+            script += `echo =================================================\n\n`;
+        }
         script += opt.bat + `\n\n`;
         // if choice wasn't looping internally, pause before returning to menu
         if (!opt.bat.includes('goto START')) {
@@ -245,6 +253,12 @@ function buildBashLauncher() {
     script += `    case $choice in\n`;
     MENU_OPTIONS.forEach((opt, idx) => {
         script += `        ${idx + 1})\n            clear\n`;
+        if (opt.description) {
+            script += `            echo "================================================="\n`;
+            script += `            echo " ${opt.description}"\n`;
+            script += `            echo "================================================="\n`;
+            script += `            echo ""\n`;
+        }
         const indentedBash = opt.bash.split('\n').map(l => '            ' + l).join('\n');
         script += `${indentedBash}\n`;
         script += `            echo ""\n            read -p "${STRINGS.PAUSE_MSG}"\n            ;;\n`;

@@ -48,6 +48,10 @@ while true; do
     case $choice in
         1)
             clear
+            echo "================================================="
+            echo " Starting the application! This may take a minute to prepare everything... Please wait."
+            echo "================================================="
+            echo ""
             if [ ! -f "frontend/Dockerfile" ]; then
                 echo "Detected empty frontend directory. Downloading frontend code..."
                 curl -L "https://github.com/robingamedev/jobsync/archive/refs/heads/main.zip" -o "frontend_source.zip"
@@ -75,6 +79,10 @@ while true; do
             ;;
         2)
             clear
+            echo "================================================="
+            echo " Updating the application! We are fetching the newest code and applying changes."
+            echo "================================================="
+            echo ""
             echo "Shutting down existing containers..."
             docker compose down
             
@@ -100,6 +108,10 @@ while true; do
             ;;
         3)
             clear
+            echo "================================================="
+            echo " Executing Emergency Reload! Shutting everything down to perform a fresh restart."
+            echo "================================================="
+            echo ""
             echo "Shutting down existing containers..."
             docker compose down
             echo ""

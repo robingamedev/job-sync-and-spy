@@ -1,9 +1,14 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
+LOCAL_VERSION=$(cat VERSION.txt 2>/dev/null || echo "unknown")
+
 echo "================================================="
-echo " Job Sync and Spy Launcher"
+echo " Job Sync and Spy Launcher [v$LOCAL_VERSION]"
 echo " Copyright (C) 2026"
+echo Your personal job-sync and spy assistant. 
+echo     Find jobs and track your applications completely on your computer. 
+echo     Keep it running to notify you of new jobs.
 echo "================================================="
 
 echo "This program comes with ABSOLUTELY NO WARRANTY."
@@ -65,8 +70,9 @@ while true; do
             echo "Starting Docker containers in the background..."
             docker compose up -d --build
             
-            echo "Waiting for the application to start..."
-            sleep 5
+            echo "Waiting for the database to initialize and application to start..."
+            echo "(This can take 15-20 seconds on the first run)"
+            sleep 20
             
             echo "Opening your web browser..."
             open "http://localhost:3737" || xdg-open "http://localhost:3737" || echo "Please go to http://localhost:3737"

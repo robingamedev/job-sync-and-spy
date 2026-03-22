@@ -8,6 +8,9 @@ const ROOT = path.join(__dirname, '..');
 
 const STRINGS = {
     TITLE: "Job Sync and Spy Launcher",
+    FRIENDLY_DESCRIPTION: `Your personal job-sync and spy assistant. 
+    Find jobs and track your applications completely on your computer. 
+    Keep it running to notify you of new jobs.`,
     COPYRIGHT: "Copyright (C) 2026",
     DISCLAIMER: `This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
@@ -54,8 +57,9 @@ if not exist "frontend\\Dockerfile" (
 echo Starting Docker containers in the background... (might take a moment)
 docker compose up -d --build
 
-echo Waiting for the application to start...
-timeout /t 5 /nobreak >nul
+echo Waiting for the database to initialize and application to start...
+echo ^(This can take 15-20 seconds on the first run^)
+timeout /t 20 /nobreak >nul
 
 echo Opening your web browser to the dashboard...
 start http://localhost:3737
@@ -79,8 +83,9 @@ fi
 echo "Starting Docker containers in the background..."
 docker compose up -d --build
 
-echo "Waiting for the application to start..."
-sleep 5
+echo "Waiting for the database to initialize and application to start..."
+echo "(This can take 15-20 seconds on the first run)"
+sleep 20
 
 echo "Opening your web browser..."
 open "http://localhost:3737" || xdg-open "http://localhost:3737" || echo "Please go to http://localhost:3737"
@@ -193,11 +198,15 @@ docker compose up -d --build
 
 function buildBatLauncher() {
     let script = `@echo off\nsetlocal enabledelayedexpansion\ncd /d "%~dp0"\n\n`;
+    script += `set /p LOCAL_VERSION=<VERSION.txt 2>nul\n\n`;
     
     // Header
     script += `echo =================================================\n`;
-    script += `echo  ${STRINGS.TITLE}\n`;
+    script += `echo  ${STRINGS.TITLE} [v!LOCAL_VERSION!]\n`;
     script += `echo  ${STRINGS.COPYRIGHT}\n`;
+    for (const line of STRINGS.FRIENDLY_DESCRIPTION.split('\n')) {
+        script += line.trim() ? `echo ${line}\n` : `echo.\n`;
+    }    
     script += `echo =================================================\n\n`;
 
     // Disclaimer
@@ -253,11 +262,15 @@ function buildBatLauncher() {
 
 function buildBashLauncher() {
     let script = `#!/bin/bash\ncd "$(dirname "$0")"\n\n`;
+    script += `LOCAL_VERSION=$(cat VERSION.txt 2>/dev/null || echo "unknown")\n\n`;
     
     // Header
     script += `echo "================================================="\n`;
-    script += `echo " ${STRINGS.TITLE}"\n`;
+    script += `echo " ${STRINGS.TITLE} [v$LOCAL_VERSION]"\n`;
     script += `echo " ${STRINGS.COPYRIGHT}"\n`;
+    for (const line of STRINGS.FRIENDLY_DESCRIPTION.split('\n')) {
+        script += line.trim() ? `echo ${line}\n` : `echo.\n`;
+    }    
     script += `echo "================================================="\n\n`;
 
     // Disclaimer

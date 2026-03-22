@@ -2,9 +2,14 @@
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
+set /p LOCAL_VERSION=<VERSION.txt 2>nul
+
 echo =================================================
-echo  Job Sync and Spy Launcher
+echo  Job Sync and Spy Launcher [v!LOCAL_VERSION!]
 echo  Copyright (C) 2026
+echo Your personal job-sync and spy assistant. 
+echo     Find jobs and track your applications completely on your computer. 
+echo     Keep it running to notify you of new jobs.
 echo =================================================
 
 echo This program comes with ABSOLUTELY NO WARRANTY.
@@ -75,8 +80,9 @@ if not exist "frontend\Dockerfile" (
 echo Starting Docker containers in the background... (might take a moment)
 docker compose up -d --build
 
-echo Waiting for the application to start...
-timeout /t 5 /nobreak >nul
+echo Waiting for the database to initialize and application to start...
+echo ^(This can take 15-20 seconds on the first run^)
+timeout /t 20 /nobreak >nul
 
 echo Opening your web browser to the dashboard...
 start http://localhost:3737
